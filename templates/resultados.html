@@ -5,54 +5,101 @@
     <title>Resultados - CASM 83</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { background-color: #f0f2f5; padding-top: 40px; padding-bottom: 40px; }
-        .card-result { border: none; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: hidden; }
-        .header-result { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px 20px; text-align: center; }
-        .score-badge { font-size: 1.2rem; background-color: #f8f9fa; color: #333; padding: 10px 20px; border-radius: 50px; font-weight: bold; margin-top: 15px; display: inline-block; }
-        .table-custom th { background-color: #f8f9fa; }
+        body { background-color: #f4f6f9; font-family: 'Segoe UI', sans-serif; }
+        .result-container { margin-top: 50px; margin-bottom: 50px; }
+        
+        .main-card {
+            border: none; border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            background: white; overflow: hidden;
+        }
+
+        .header-bg {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white; padding: 50px 20px; text-align: center;
+        }
+
+        .rank-item {
+            background: #fff; border-radius: 12px;
+            padding: 20px; margin-bottom: 15px;
+            border: 1px solid #eef2f7;
+            display: flex; align-items: center;
+        }
+
+        .rank-badge {
+            width: 50px; height: 50px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; font-weight: bold; color: white;
+            margin-right: 20px; flex-shrink: 0;
+        }
+        .rank-1 { background-color: #FFD700; box-shadow: 0 4px 10px rgba(255, 215, 0, 0.4); }
+        .rank-2 { background-color: #C0C0C0; box-shadow: 0 4px 10px rgba(192, 192, 192, 0.4); }
+        .rank-3 { background-color: #CD7F32; box-shadow: 0 4px 10px rgba(205, 127, 50, 0.4); }
+
+        .area-info { flex-grow: 1; }
+        .area-name { font-size: 1.25rem; font-weight: 600; color: #333; margin-bottom: 5px; }
+        
+        .progress { height: 8px; border-radius: 4px; background-color: #e9ecef; margin-top: 5px; }
+        .score-text { font-size: 0.95rem; font-weight: bold; color: #666; float: right; }
     </style>
 </head>
 <body>
 
-    <div class="container">
+    <div class="container result-container">
         <div class="row justify-content-center">
             <div class="col-lg-8">
-                <div class="card card-result">
+                <div class="main-card">
                     
-                    <div class="header-result">
-                        <h4 class="text-uppercase letter-spacing-2 opacity-75">Tu área de interés dominante es</h4>
-                        <h1 class="display-4 fw-bold my-3">{{ ganador_nombre }}</h1>
-                        <div class="score-badge">Puntaje: {{ ganador_puntaje }}</div>
+                    <div class="header-bg">
+                        <p class="text-uppercase mb-2 opacity-75 letter-spacing-2">Tu vocación dominante es</p>
+                        <h1 class="display-4 fw-bold mb-0">{{ ganador_nombre }}</h1>
+                        <span class="badge bg-light text-dark mt-3 fs-6">Puntaje: {{ ganador_puntaje }}</span>
                     </div>
 
                     <div class="card-body p-5">
-                        <div class="alert alert-info text-center">
-                            <strong>Interpretación:</strong> Este resultado indica una inclinación hacia actividades relacionadas con {{ ganador_nombre }}.
-                        </div>
-
-                        <h5 class="mt-5 mb-3 text-secondary border-bottom pb-2">Detalle de Puntajes por Área</h5>
+                        <h4 class="text-center text-secondary mb-4">Tus 3 Áreas de Mayor Interés</h4>
                         
-                        <div class="table-responsive">
-                            <table class="table table-hover table-custom">
-                                <thead>
-                                    <tr>
-                                        <th>Área Vocacional</th>
-                                        <th class="text-center">Puntaje</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for nombre, puntaje in puntajes_ordenados %}
-                                    <tr class="{% if nombre == ganador_nombre %}table-success fw-bold{% endif %}">
-                                        <td>{{ nombre }}</td>
-                                        <td class="text-center">{{ puntaje }}</td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
+                        <div class="rank-list">
+                            
+                            {% for nombre, puntos in top_3 %}
+                            <div class="rank-item">
+                                <div class="rank-badge 
+                                    {% if loop.index == 1 %}rank-1
+                                    {% elif loop.index == 2 %}rank-2
+                                    {% else %}rank-3{% endif %}">
+                                    {{ loop.index }}
+                                </div>
+                                
+                                <div class="area-info">
+                                    <div class="d-flex justify-content-between">
+                                        <span class="area-name">{{ nombre }}</span>
+                                        
+                                        <span class="score-text">{{ puntos }} Ptos</span>
+                                    </div>
+                                    
+                                    <div class="progress">
+                                        <div class="progress-bar 
+                                            {% if loop.index == 1 %}bg-warning
+                                            {% elif loop.index == 2 %}bg-secondary
+                                            {% else %}bg-danger{% endif %}" 
+                                            role="progressbar" 
+                                            style="width: {{ (puntos / 33) * 100 }}%">
+                                        </div>
+                                    </div>
+                                    
+                                    <small class="text-muted">
+                                        {% if loop.index == 1 %}Área de interés principal
+                                        {% elif loop.index == 2 %}Segunda opción recomendada
+                                        {% else %}Tercera opción recomendada{% endif %}
+                                    </small>
+                                </div>
+                            </div>
+                            {% endfor %}
+
                         </div>
 
-                        <div class="d-grid gap-2 mt-5">
-                            <button onclick="window.print()" class="btn btn-outline-dark btn-lg">🖨️ Imprimir Resultados</button>
+                        <div class="d-grid gap-3 mt-5">
+                            <button onclick="window.print()" class="btn btn-outline-dark btn-lg">🖨️ Imprimir Informe</button>
                             <a href="/" class="btn btn-primary btn-lg">🔄 Realizar otro Test</a>
                         </div>
                     </div>
