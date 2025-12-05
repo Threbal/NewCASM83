@@ -1,5 +1,0 @@
-{
-  "schema": "node",
-  "build": "npm install",
-  "start": "npm start"
-}
